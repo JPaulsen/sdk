@@ -20,9 +20,9 @@ import 'package:analysis_server/src/services/correction/levenshtein.dart';
 import 'package:analysis_server/src/services/correction/name_suggestion.dart';
 import 'package:analysis_server/src/services/correction/namespace.dart';
 import 'package:analysis_server/src/services/correction/source_buffer.dart';
+import 'package:analysis_server/src/services/correction/source_range.dart';
 import 'package:analysis_server/src/services/correction/source_range.dart'
     as rf;
-import 'package:analysis_server/src/services/correction/source_range.dart';
 import 'package:analysis_server/src/services/correction/strings.dart';
 import 'package:analysis_server/src/services/correction/util.dart';
 import 'package:analysis_server/src/services/search/hierarchy.dart';
@@ -383,6 +383,9 @@ class FixProcessor {
       }
       if (errorCode.name == LintNames.unnecessary_brace_in_string_interp) {
         _addLintRemoveInterpolationBraces();
+      }
+      if (errorCode.name == LintNames.use_to_and_as_if_applicable) {
+        _addLintRenameWithToAndAsType();
       }
     }
     // done
@@ -2342,6 +2345,16 @@ class FixProcessor {
     }
   }
 
+  void _addLintRenameWithToAndAsType() {
+    SimpleIdentifier identifier = node;
+    MethodDeclaration method = node.parent;
+    final returnType = method.returnType == null ? 'Dynamic' : method.returnType.name.name;
+    _addReplaceEdit(rf.rangeNode(identifier), 'to$returnType');
+    _addFix(DartFixKind.LINT_RENAME_METHOD_WITH_TO_TYPE, []);
+    _addReplaceEdit(rf.rangeNode(identifier), 'as$returnType');
+    _addFix(DartFixKind.LINT_RENAME_METHOD_WITH_AS_TYPE, []);
+  }
+
   /**
    * Prepares proposal for creating function corresponding to the given
    * [FunctionType].
@@ -3000,6 +3013,8 @@ class LintNames {
   static const String annotate_overrides = 'annotate_overrides';
   static const String unnecessary_brace_in_string_interp =
       'unnecessary_brace_in_string_interp';
+  static const String use_to_and_as_if_applicable =
+      'use_to_and_as_if_applicable';
 }
 
 /**

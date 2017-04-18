@@ -109,7 +109,8 @@ bool hasFix(ErrorCode errorCode) =>
     errorCode == CompileTimeErrorCode.UNDEFINED_NAMED_PARAMETER ||
     (errorCode is LintCode &&
         (errorCode.name == LintNames.annotate_overrides ||
-            errorCode.name == LintNames.unnecessary_brace_in_string_interp));
+            errorCode.name == LintNames.unnecessary_brace_in_string_interp ||
+            errorCode.name == LintNames.use_to_and_as_if_applicable));
 
 /**
  * An enumeration of possible quick fix kinds.
@@ -189,6 +190,10 @@ class DartFixKind {
       'LINT_REMOVE_INTERPOLATION_BRACES',
       50,
       'Remove unnecessary interpolation braces');
+  static const LINT_RENAME_METHOD_WITH_AS_TYPE = const FixKind(
+      'LINT_RENAME_METHOD_WITH_AS_TYPE', 50, "Rename method with AS type");
+  static const LINT_RENAME_METHOD_WITH_TO_TYPE = const FixKind(
+      'LINT_RENAME_METHOD_WITH_TO_TYPE', 50, "Rename method with TO type");
   static const MAKE_CLASS_ABSTRACT =
       const FixKind('MAKE_CLASS_ABSTRACT', 50, "Make class '{0}' abstract");
   static const REMOVE_DEAD_CODE =
